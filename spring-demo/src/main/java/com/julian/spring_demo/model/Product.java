@@ -1,10 +1,17 @@
 package com.julian.spring_demo.model;
+import jakarta.validation.constraints.*;
 
 public class Product {
 
     private Long id;
+
+    @NotBlank(message = "Name cannot be blank")
     private String name;
+
+    @Positive (message = "Price must be positive")
     private double price;
+
+    @PositiveOrZero (message = "Stock cannot be negative")
     private int stock;
 
     public Product () {}
