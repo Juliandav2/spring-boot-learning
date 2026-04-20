@@ -6,7 +6,6 @@ import com.julian.spring_demo.repository.ProductRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class ProductService {
@@ -18,22 +17,13 @@ public class ProductService {
     }
 
     public List<Product> getAll (String name, Double maxPrice) {
-        return repository.finAll().stream()
-                .filter(product -> name == null || product.getName().toLowerCase().contains(name.toLowerCase()))
-                .filter(product -> maxPrice == null || product.getPrice() <= maxPrice)
-                .collect(Collectors.toList());
+        if (name != null) return repository.findByNameContainingIgnoreCase(name);
+        if (maxPrice != null) return repository.findByPriceLessThanEqual(maxPrice);
+        return repository.findAll();
     }
 
     public Product getById (Long id) {
-
-        Product product = repository.findById(id);
-
-        if (product == null) {
-            throw new ProductNotFoundException(id);
-        }
-
-        return product;
-
+        return repository.findById(id).orElseThrow(() -> new ProductNotFoundException(id));
     }
 
     public Product create (Product product) {
@@ -41,22 +31,17 @@ public class ProductService {
     }
 
     public Product update (Long id, Product product) {
-
         if (repository.existsById(id)) {
             throw new ProductNotFoundException(id);
         }
-
         product.setId(id);
         return repository.save(product);
-
     }
 
     public void delete (Long id) {
-
         if (repository.existsById(id)) {
             throw new ProductNotFoundException(id);
         }
-
         repository.deleteById(id);
     }
 

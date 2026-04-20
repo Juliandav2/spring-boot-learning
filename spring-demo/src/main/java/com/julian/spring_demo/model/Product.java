@@ -1,8 +1,14 @@
 package com.julian.spring_demo.model;
-import jakarta.validation.constraints.*;
 
+import jakarta.validation.constraints.*;
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "products")
 public class Product {
 
+    @Id
+    @GeneratedValue (strategy = GenerationType.IDENTITY)
     private Long id;
 
     @NotBlank(message = "Name cannot be blank")
