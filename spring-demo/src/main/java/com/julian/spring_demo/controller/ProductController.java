@@ -19,8 +19,9 @@ public class ProductController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Product>> getAll () {
-        return ResponseEntity.ok(productService.getAll());
+    public ResponseEntity<List<Product>> getAll (@RequestParam (required = false) String name,
+                                                 @RequestParam (required = false) Double maxPrice) {
+        return ResponseEntity.ok(productService.getAll(name, maxPrice));
 
     }
 
@@ -44,6 +45,5 @@ public class ProductController {
         productService.delete(id);
         return ResponseEntity.noContent().build();
     }
-
 }
 

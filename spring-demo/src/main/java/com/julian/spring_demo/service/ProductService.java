@@ -6,6 +6,7 @@ import com.julian.spring_demo.repository.ProductRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductService {
@@ -16,8 +17,11 @@ public class ProductService {
         this.repository = repository;
     }
 
-    public List<Product> getAll () {
-        return repository.finAll();
+    public List<Product> getAll (String name, Double maxPrice) {
+        return repository.finAll().stream()
+                .filter(product -> name == null || product.getName().toLowerCase().contains(name.toLowerCase()))
+                .filter(product -> maxPrice == null || product.getPrice() <= maxPrice)
+                .collect(Collectors.toList());
     }
 
     public Product getById (Long id) {
