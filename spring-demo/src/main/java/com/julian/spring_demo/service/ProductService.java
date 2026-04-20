@@ -1,5 +1,6 @@
 package com.julian.spring_demo.service;
 
+import com.julian.spring_demo.exception.ProductNotFoundException;
 import com.julian.spring_demo.model.Product;
 import com.julian.spring_demo.repository.ProductRepository;
 import org.springframework.stereotype.Service;
@@ -24,7 +25,7 @@ public class ProductService {
         Product product = repository.findById(id);
 
         if (product == null) {
-            throw new RuntimeException("Product not found with ID: " + id);
+            throw new ProductNotFoundException(id);
         }
 
         return product;
@@ -37,8 +38,8 @@ public class ProductService {
 
     public Product update (Long id, Product product) {
 
-        if (!repository.existsById(id)) {
-            throw new RuntimeException("Product not found with ID: " + id);
+        if (repository.existsById(id)) {
+            throw new ProductNotFoundException(id);
         }
 
         product.setId(id);
@@ -48,8 +49,8 @@ public class ProductService {
 
     public void delete (Long id) {
 
-        if (!repository.existsById(id)) {
-            throw new RuntimeException("Product not found with ID: " + id);
+        if (repository.existsById(id)) {
+            throw new ProductNotFoundException(id);
         }
 
         repository.deleteById(id);

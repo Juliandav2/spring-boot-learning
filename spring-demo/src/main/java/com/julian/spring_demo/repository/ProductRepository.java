@@ -39,7 +39,7 @@ public class ProductRepository {
     }
 
     public boolean existsById (Long id) {
-        return products.containsKey(id);
+        return !products.containsKey(id);
     }
 
 }
