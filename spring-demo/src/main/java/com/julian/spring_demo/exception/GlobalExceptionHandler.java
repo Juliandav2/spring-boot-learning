@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import java.util.HashMap;
 
+import java.util.HashMap;
 import java.time.LocalDateTime;
 import java.util.Map;
 
@@ -42,5 +42,12 @@ public class GlobalExceptionHandler {
                 ("status", 400, "errors", errors));
     }
 
+    @ExceptionHandler (CategoryNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleNotFoundCategory (CategoryNotFoundException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of(
+                "timestamp", LocalDateTime.now(),
+                "status", 404,
+                "error", e.getMessage()));
+    }
 
 }
