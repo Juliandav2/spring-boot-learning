@@ -19,16 +19,17 @@ public class ProductController {
         this.productService = productService;
     }
 
-    @GetMapping
-    public ResponseEntity<List<Product>> getAll (@RequestParam (required = false) String name,
-                                                 @RequestParam (required = false) Double maxPrice) {
-        return ResponseEntity.ok(productService.getAll(name, maxPrice));
-
-    }
-
     @GetMapping ("/{id}")
     public ResponseEntity<Product> getById (@PathVariable Long id) {
         return ResponseEntity.ok(productService.getById(id));
+    }
+
+    @GetMapping
+    public ResponseEntity<List<Product>> getAll (@RequestParam (required = false) String name,
+                                                 @RequestParam (required = false) Double maxPrice,
+                                                 @RequestParam (required = false) Long categoryId) {
+        if (categoryId != null) return ResponseEntity.ok(productService.findByCategoryId(categoryId));
+        return ResponseEntity.ok(productService.getAll(name, maxPrice));
     }
 
     @PostMapping

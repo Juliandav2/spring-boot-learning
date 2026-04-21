@@ -22,19 +22,8 @@ public class Category {
     public Category (Long id, String name, String description) {
 
         this.id = id;
-
-        if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("Th name cannot be null or negative");
-        }
-
         this.name = name;
-
-        if (description == null || description.isBlank()) {
-            throw new IllegalArgumentException("The description cannot be null or negative");
-        }
-
         this.description = description;
-
     }
 
     public Long getId() {

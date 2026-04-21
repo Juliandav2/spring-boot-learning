@@ -20,29 +20,19 @@ public class Product {
     @PositiveOrZero (message = "Stock cannot be negative")
     private int stock;
 
+    @ManyToOne
+    @JoinColumn (name = "category_id")
+    private Category category;
+
     public Product () {}
 
-    public Product (Long id, String name, double price, int stock) {
+    public Product (Long id, String name, double price, int stock, Category category) {
 
         this.id = id;
-
-        if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("The name cannot be null or blank");
-        }
-
         this.name = name;
-
-        if (price <= 0) {
-            throw new IllegalArgumentException("The price cannot be negative or 0");
-        }
-
         this.price = price;
-
-        if (stock < 0) {
-            throw new IllegalArgumentException("The stock cannot be negative");
-        }
-
         this.stock = stock;
+        this.category = category;
     }
 
     public Long getId() {
@@ -75,5 +65,13 @@ public class Product {
 
     public void setStock(int stock) {
         this.stock = stock;
+    }
+
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
     }
 }
