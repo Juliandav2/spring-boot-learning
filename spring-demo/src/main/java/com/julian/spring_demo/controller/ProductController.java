@@ -3,11 +3,13 @@ package com.julian.spring_demo.controller;
 import com.julian.spring_demo.model.Product;
 import com.julian.spring_demo.service.ProductService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping ("/api/products")
@@ -25,11 +27,15 @@ public class ProductController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Product>> getAll (@RequestParam (required = false) String name,
+    public ResponseEntity<Page<Product>> getAll (@RequestParam (required = false) String name,
                                                  @RequestParam (required = false) Double maxPrice,
-                                                 @RequestParam (required = false) Long categoryId) {
-        if (categoryId != null) return ResponseEntity.ok(productService.findByCategoryId(categoryId));
-        return ResponseEntity.ok(productService.getAll(name, maxPrice));
+                                                 @RequestParam (required = false) Long categoryId,
+                                                 @RequestParam (defaultValue = "0") int page,
+                                                 @RequestParam (defaultValue = "10") int size,
+                                                 @RequestParam (defaultValue = "id") String sortBy) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, sortBy.trim()));
+        if (categoryId != null) return ResponseEntity.ok(productService.findByCategoryId(categoryId, pageable));
+        return ResponseEntity.ok(productService.getAll(name, maxPrice, page, size, sortBy));
     }
 
     @PostMapping

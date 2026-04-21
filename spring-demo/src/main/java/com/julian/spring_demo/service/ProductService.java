@@ -6,6 +6,12 @@ import com.julian.spring_demo.model.Category;
 import com.julian.spring_demo.model.Product;
 import com.julian.spring_demo.repository.CategoryRepository;
 import com.julian.spring_demo.repository.ProductRepository;
+import org.aspectj.weaver.patterns.HasThisTypePatternTriedToSneakInSomeGenericOrParameterizedTypePatternMatchingStuffAnywhereVisitor;
+import org.springframework.boot.data.autoconfigure.web.DataWebProperties;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,18 +27,18 @@ public class ProductService {
         this.categoryRepository = categoryRepository;
     }
 
-    public List<Product> getAll (String name, Double maxPrice) {
-        if (name != null) return repository.findByNameContainingIgnoreCase(name);
-        if (maxPrice != null) return repository.findByPriceLessThanEqual(maxPrice);
-        return repository.findAll();
+    public Page<Product> getAll (String name, Double maxPrice, int page, int size, String sortBy) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
+        if (name != null) return repository.findByNameContainingIgnoreCase(name, pageable);
+        return repository.findAll(pageable);
     }
 
     public Product getById (Long id) {
         return repository.findById(id).orElseThrow(() -> new ProductNotFoundException(id));
     }
 
-    public List<Product> findByCategoryId(Long categoryId) {
-        return repository.findByCategoryId(categoryId);
+    public Page<Product> findByCategoryId(Long categoryId, Pageable pageable) {
+        return repository.findByCategoryId(categoryId, pageable);
     }
 
     public Product create (Product product) {
