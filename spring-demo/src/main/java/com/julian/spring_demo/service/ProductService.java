@@ -13,6 +13,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ProductService {
@@ -25,6 +26,7 @@ public class ProductService {
         this.categoryRepository = categoryRepository;
     }
 
+    @Transactional (readOnly = true)
     public Page<ProductResponseDTO> getAll (String name, Double maxPrice, int page, int size, String sortBy) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, sortBy.trim()));
         Page<Product> products;
@@ -36,6 +38,7 @@ public class ProductService {
         return products.map(this::toDTO);
     }
 
+    @Transactional(readOnly = true)
     public ProductResponseDTO getById (Long id) {
         return toDTO(repository.findById(id).orElseThrow(() -> new ProductNotFoundException(id)));
     }
@@ -44,6 +47,7 @@ public class ProductService {
         return repository.findByCategoryId(categoryId, pageable).map(this::toDTO);
     }
 
+    @Transactional
     public ProductResponseDTO create (ProductRequestDTO dto) {
         Product product = new Product();
         product.setName(dto.getName());
@@ -58,6 +62,7 @@ public class ProductService {
         return toDTO(repository.save(product));
     }
 
+    @Transactional
     public ProductResponseDTO update (Long id, ProductRequestDTO dto) {
         Product product = repository.findById(id)
                 .orElseThrow(() -> new ProductNotFoundException(id));
@@ -74,6 +79,7 @@ public class ProductService {
         return toDTO(repository.save(product));
     }
 
+    @Transactional
     public void delete (Long id) {
         if (!repository.existsById(id)) {
             throw new ProductNotFoundException(id);

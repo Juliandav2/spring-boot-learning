@@ -2,7 +2,6 @@ package com.julian.spring_demo.controller;
 
 import com.julian.spring_demo.dto.ProductRequestDTO;
 import com.julian.spring_demo.dto.ProductResponseDTO;
-import com.julian.spring_demo.model.Product;
 import com.julian.spring_demo.service.ProductService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
