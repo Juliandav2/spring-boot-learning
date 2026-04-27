@@ -24,6 +24,10 @@ public class Product {
     @JoinColumn (name = "category_id")
     private Category category;
 
+    @ManyToOne
+    @JoinColumn (name = "supplier_id")
+    private Supplier supplier;
+
     public Product () {}
 
     public Product (Long id, String name, double price, int stock, Category category) {

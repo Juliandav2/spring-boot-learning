@@ -50,4 +50,12 @@ public class GlobalExceptionHandler {
                 "error", e.getMessage()));
     }
 
+    @ExceptionHandler (SupplierNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleNotFoundSupplier (SupplierNotFoundException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of(
+                "timestamp", LocalDateTime.now(),
+                "status", 404,
+                "error", e.getMessage()));
+    }
+
 }
