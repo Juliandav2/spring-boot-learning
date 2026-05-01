@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
+import java.util.List;
+
 @RestController
 @RequestMapping ("/api/products")
 @Tag (name = "Products", description = "Product management API")
@@ -63,5 +65,17 @@ public class ProductController {
         productService.delete(id);
         return ResponseEntity.noContent().build();
     }
-}
 
+    @Operation (summary = "Get products by price range")
+    @GetMapping ("/price-range")
+    public ResponseEntity<List<ProductResponseDTO>> getByPriceRange (@RequestParam double minPrice,
+                                                                     @RequestParam double maxPrice) {
+        return ResponseEntity.ok(productService.getByPriceRange(minPrice, maxPrice));
+    }
+
+    @Operation (summary = "Get low stock products")
+    @GetMapping ("/low-stock")
+    public ResponseEntity<List<ProductResponseDTO>> getLowStock (@RequestParam (defaultValue = "5") int minStock) {
+        return ResponseEntity.ok(productService.getLowStock(minStock));
+    }
+}

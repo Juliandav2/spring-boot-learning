@@ -15,6 +15,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.security.PublicKey;
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class ProductService {
 
@@ -85,6 +89,18 @@ public class ProductService {
             throw new ProductNotFoundException(id);
         }
         repository.deleteById(id);
+    }
+
+    @Transactional (readOnly = true)
+    public List<ProductResponseDTO> getByPriceRange (double minPrice, double maxPrice) {
+        return repository.findByPriceRange(minPrice, maxPrice)
+                .stream().map(this::toDTO).collect(Collectors.toList());
+    }
+
+    @Transactional (readOnly = true)
+    public List<ProductResponseDTO> getLowStock (int minStock) {
+        return  repository.findLowStock(minStock)
+                .stream().map(this::toDTO).collect(Collectors.toList());
     }
 
     private ProductResponseDTO toDTO (Product product) {
