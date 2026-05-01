@@ -78,4 +78,18 @@ public class ProductController {
     public ResponseEntity<List<ProductResponseDTO>> getLowStock (@RequestParam (defaultValue = "5") int minStock) {
         return ResponseEntity.ok(productService.getLowStock(minStock));
     }
+
+    @Operation (summary = "Add tag to product")
+    @PostMapping ("/{productId}/tags/{tagId}")
+    public ResponseEntity<ProductResponseDTO> addTag (@PathVariable Long productId,
+                                                      @PathVariable Long tagId) {
+        return ResponseEntity.ok(productService.addTag(productId, tagId));
+    }
+
+    @Operation (summary = "Remove tag form product")
+    @DeleteMapping ("/{productId}/tags/{tagId}")
+    public ResponseEntity<ProductResponseDTO> removeTag (@PathVariable Long productId,
+                                                         @PathVariable Long tagId) {
+        return ResponseEntity.ok(productService.removeTag(productId, tagId));
+    }
 }

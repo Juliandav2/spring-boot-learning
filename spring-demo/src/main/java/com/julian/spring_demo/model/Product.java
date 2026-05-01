@@ -3,6 +3,9 @@ package com.julian.spring_demo.model;
 import jakarta.validation.constraints.*;
 import jakarta.persistence.*;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Entity
 @Table(name = "products")
 public class Product {
@@ -27,6 +30,10 @@ public class Product {
     @ManyToOne
     @JoinColumn (name = "supplier_id")
     private Supplier supplier;
+
+    @ManyToMany
+    @JoinTable (name = "products_tags", joinColumns = @JoinColumn(name = "product_id"), inverseJoinColumns = @JoinColumn (name = "tag_id"))
+    private Set<Tag> tags = new HashSet<>();
 
     public Product () {}
 
@@ -77,5 +84,13 @@ public class Product {
 
     public void setCategory(Category category) {
         this.category = category;
+    }
+
+    public Set<Tag> getTags() {
+        return tags;
+    }
+
+    public void setTags(Set<Tag> tags) {
+        this.tags = tags;
     }
 }

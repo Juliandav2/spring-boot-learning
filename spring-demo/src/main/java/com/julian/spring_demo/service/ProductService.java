@@ -4,10 +4,13 @@ import com.julian.spring_demo.dto.ProductRequestDTO;
 import com.julian.spring_demo.dto.ProductResponseDTO;
 import com.julian.spring_demo.exception.CategoryNotFoundException;
 import com.julian.spring_demo.exception.ProductNotFoundException;
+import com.julian.spring_demo.exception.TagNotFoundException;
 import com.julian.spring_demo.model.Category;
 import com.julian.spring_demo.model.Product;
+import com.julian.spring_demo.model.Tag;
 import com.julian.spring_demo.repository.CategoryRepository;
 import com.julian.spring_demo.repository.ProductRepository;
+import com.julian.spring_demo.repository.TagRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -15,8 +18,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.security.PublicKey;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -24,10 +27,12 @@ public class ProductService {
 
     private final ProductRepository repository;
     private final CategoryRepository categoryRepository;
+    private final TagRepository tagRepository;
 
-    public ProductService (ProductRepository repository, CategoryRepository categoryRepository) {
+    public ProductService (ProductRepository repository, CategoryRepository categoryRepository, TagRepository tagRepository) {
         this.repository = repository;
         this.categoryRepository = categoryRepository;
+        this.tagRepository = tagRepository;
     }
 
     @Transactional (readOnly = true)
@@ -103,14 +108,38 @@ public class ProductService {
                 .stream().map(this::toDTO).collect(Collectors.toList());
     }
 
+    @Transactional
+    public ProductResponseDTO addTag (Long productId, Long tagId) {
+        Product product = repository.findById(productId)
+                .orElseThrow(() -> new ProductNotFoundException(productId));
+        Tag tag = tagRepository.findById(tagId)
+                .orElseThrow(() -> new TagNotFoundException(tagId));
+
+        product.getTags().add(tag);
+        return toDTO(repository.save(product));
+    }
+
+    @Transactional
+    public ProductResponseDTO removeTag (Long productId, Long tagId) {
+        Product product = repository.findById(productId)
+                .orElseThrow(() -> new ProductNotFoundException(productId));
+        Tag tag = tagRepository.findById(tagId)
+                .orElseThrow(() -> new TagNotFoundException(tagId));
+
+        product.getTags().remove(tag);
+        return toDTO(repository.save(product));
+    }
+
     private ProductResponseDTO toDTO (Product product) {
         String categoryName = product.getCategory() != null ? product.getCategory().getName() : null;
+        Set<String> tags = product.getTags().stream().map(Tag::getName).collect(Collectors.toSet());
         return new ProductResponseDTO (
                 product.getId(),
                 product.getName(),
                 product.getPrice(),
                 product.getStock(),
-                categoryName
+                categoryName,
+                tags
         );
     }
 }

@@ -1,5 +1,6 @@
 package com.julian.spring_demo.exception;
 
+import com.julian.spring_demo.model.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -52,6 +53,14 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler (SupplierNotFoundException.class)
     public ResponseEntity<Map<String, Object>> handleNotFoundSupplier (SupplierNotFoundException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of(
+                "timestamp", LocalDateTime.now(),
+                "status", 404,
+                "error", e.getMessage()));
+    }
+
+    @ExceptionHandler (TagNotFoundException.class)
+    public ResponseEntity <Map<String, Object>> handleNotFoundTag (TagNotFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of(
                 "timestamp", LocalDateTime.now(),
                 "status", 404,

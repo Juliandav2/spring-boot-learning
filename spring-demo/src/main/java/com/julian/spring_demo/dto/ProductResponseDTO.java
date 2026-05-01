@@ -1,5 +1,7 @@
 package com.julian.spring_demo.dto;
 
+import java.util.Set;
+
 public class ProductResponseDTO {
 
     private Long id;
@@ -7,16 +9,18 @@ public class ProductResponseDTO {
     private double price;
     private int stock;
     private String categoryName;
+    private Set<String> tags;
 
     public ProductResponseDTO () {}
 
-    public ProductResponseDTO (Long id, String name, double price, int stock, String categoryName) {
+    public ProductResponseDTO (Long id, String name, double price, int stock, String categoryName, Set<String> tags) {
 
         this.id = id;
         this.name = name;
         this.price = price;
         this.stock = stock;
         this.categoryName = categoryName;
+        this.tags = tags;
 
     }
 
@@ -58,5 +62,9 @@ public class ProductResponseDTO {
 
     public void setCategoryName(String categoryName) {
         this.categoryName = categoryName;
+    }
+
+    public Set<String> getTags() {
+        return tags;
     }
 }

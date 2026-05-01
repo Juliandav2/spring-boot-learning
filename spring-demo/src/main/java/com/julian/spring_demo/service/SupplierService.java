@@ -7,6 +7,7 @@ import com.julian.spring_demo.dto.SupplierResponseDTO;
 import com.julian.spring_demo.exception.SupplierNotFoundException;
 
 import com.julian.spring_demo.model.Supplier;
+import com.julian.spring_demo.model.Tag;
 import com.julian.spring_demo.repository.SupplierRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -88,7 +89,8 @@ public class SupplierService {
                 product.getName(),
                 product.getPrice(),
                 product.getStock(),
-                product.getCategory() != null ? product.getCategory().getName() : null
+                product.getCategory() != null ? product.getCategory().getName() : null,
+                product.getTags().stream().map(Tag::getName).collect(Collectors.toSet())
         ))
                 .collect(Collectors.toList());
     }
