@@ -17,6 +17,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Set;
@@ -28,6 +30,7 @@ public class ProductService {
     private final ProductRepository repository;
     private final CategoryRepository categoryRepository;
     private final TagRepository tagRepository;
+    private static final Logger log = LoggerFactory.getLogger(ProductService.class);
 
     public ProductService (ProductRepository repository, CategoryRepository categoryRepository, TagRepository tagRepository) {
         this.repository = repository;
@@ -49,7 +52,10 @@ public class ProductService {
 
     @Transactional(readOnly = true)
     public ProductResponseDTO getById (Long id) {
-        return toDTO(repository.findById(id).orElseThrow(() -> new ProductNotFoundException(id)));
+        log.debug("Fetching product with id: {}", id);
+        return toDTO(repository.findById(id).orElseThrow(() -> {log.warn("Product not found with id: {}", id);
+            return new ProductNotFoundException(id);
+        }));
     }
 
     public Page<ProductResponseDTO> findByCategoryId(Long categoryId, Pageable pageable) {
@@ -58,6 +64,7 @@ public class ProductService {
 
     @Transactional
     public ProductResponseDTO create (ProductRequestDTO dto) {
+        log.info("Creating product with name {}", dto.getName());
         Product product = new Product();
         product.setName(dto.getName());
         product.setPrice(dto.getPrice());
@@ -65,10 +72,14 @@ public class ProductService {
 
         if (dto.getCategoryId() != null) {
             Category category = categoryRepository.findById(dto.getCategoryId())
-                    .orElseThrow(() -> new CategoryNotFoundException(dto.getCategoryId()));
+                    .orElseThrow(() -> {log.warn("Category not found with id: {}", dto.getCategoryId());
+                        return new CategoryNotFoundException(dto.getCategoryId());
+                    });
             product.setCategory(category);
         }
-        return toDTO(repository.save(product));
+        ProductResponseDTO result = toDTO(repository.save(product));
+        log.info("Product created successfully with id: {}", result.getId());
+        return result;
     }
 
     @Transactional
