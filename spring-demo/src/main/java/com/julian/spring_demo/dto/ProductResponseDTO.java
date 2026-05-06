@@ -1,5 +1,6 @@
 package com.julian.spring_demo.dto;
 
+import java.time.LocalDateTime;
 import java.util.Set;
 
 public class ProductResponseDTO {
@@ -10,10 +11,12 @@ public class ProductResponseDTO {
     private int stock;
     private String categoryName;
     private Set<String> tags;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
     public ProductResponseDTO () {}
 
-    public ProductResponseDTO (Long id, String name, double price, int stock, String categoryName, Set<String> tags) {
+    public ProductResponseDTO (Long id, String name, double price, int stock, String categoryName, Set<String> tags, LocalDateTime createdAt, LocalDateTime updatedAt) {
 
         this.id = id;
         this.name = name;
@@ -21,6 +24,8 @@ public class ProductResponseDTO {
         this.stock = stock;
         this.categoryName = categoryName;
         this.tags = tags;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
 
     }
 
@@ -66,5 +71,21 @@ public class ProductResponseDTO {
 
     public Set<String> getTags() {
         return tags;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }

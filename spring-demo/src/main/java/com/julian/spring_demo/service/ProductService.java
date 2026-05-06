@@ -150,7 +150,9 @@ public class ProductService {
                 product.getPrice(),
                 product.getStock(),
                 categoryName,
-                tags
+                tags,
+                product.getCreatedAt(),
+                product.getUpdatedAt()
         );
     }
 }

@@ -90,7 +90,7 @@ public class SupplierService {
                 product.getPrice(),
                 product.getStock(),
                 product.getCategory() != null ? product.getCategory().getName() : null,
-                product.getTags().stream().map(Tag::getName).collect(Collectors.toSet())
+                product.getTags().stream().map(Tag::getName).collect(Collectors.toSet()), product.getCreatedAt(), product.getUpdatedAt()
         ))
                 .collect(Collectors.toList());
     }
