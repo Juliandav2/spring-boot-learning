@@ -2,13 +2,15 @@ package com.julian.spring_demo.model;
 
 import jakarta.validation.constraints.*;
 import jakarta.persistence.*;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Table (name = "suppliers")
-public class Supplier {
+@SQLRestriction("deleted = false")
+public class Supplier extends BaseEntity {
 
     @Id
     @GeneratedValue (strategy = GenerationType.IDENTITY)

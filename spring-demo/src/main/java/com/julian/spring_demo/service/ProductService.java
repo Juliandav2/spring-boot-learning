@@ -101,10 +101,11 @@ public class ProductService {
 
     @Transactional
     public void delete (Long id) {
-        if (!repository.existsById(id)) {
-            throw new ProductNotFoundException(id);
-        }
-        repository.deleteById(id);
+       Product product = repository.findById(id)
+               .orElseThrow(() -> new ProductNotFoundException(id));
+       product.setDeleted(true);
+       repository.save(product);
+       log.info("Product soft deleted with id: {}", id);
     }
 
     @Transactional (readOnly = true)

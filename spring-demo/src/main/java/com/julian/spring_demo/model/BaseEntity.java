@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 
 @MappedSuperclass
 @EntityListeners (AuditingEntityListener.class)
-public class BaseEntity {
+public abstract class BaseEntity {
 
     @CreatedDate
     @Column (updatable = false)
@@ -17,6 +17,17 @@ public class BaseEntity {
 
     @LastModifiedDate
     private LocalDateTime updatedAt;
+
+    @Column (nullable = false)
+    private boolean deleted = false;
+
+    public boolean isDeleted () {
+        return deleted;
+    }
+
+    public void setDeleted (boolean deleted) {
+        this.deleted = deleted;
+    }
 
     public LocalDateTime getCreatedAt() {
         return createdAt;

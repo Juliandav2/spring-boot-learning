@@ -2,12 +2,14 @@ package com.julian.spring_demo.model;
 
 import jakarta.validation.constraints.*;
 import jakarta.persistence.*;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Table(name = "products")
+@SQLRestriction ("deleted = false")
 public class Product extends BaseEntity {
 
     @Id

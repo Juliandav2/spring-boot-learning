@@ -7,6 +7,8 @@ import com.julian.spring_demo.model.Tag;
 import com.julian.spring_demo.repository.TagRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -15,6 +17,7 @@ import java.util.stream.Collectors;
 public class TagService {
 
     private final TagRepository tagRepository;
+    private static final Logger log = LoggerFactory.getLogger(TagService.class);
 
     public TagService (TagRepository tagRepository) {
         this.tagRepository = tagRepository;
@@ -52,9 +55,10 @@ public class TagService {
 
     @Transactional
     public void delete (Long id) {
-        if (!tagRepository.existsById(id)) {
-            throw new TagNotFoundException(id);
-        }
-        tagRepository.deleteById(id);
+        Tag tag = tagRepository.findById(id)
+                .orElseThrow(() -> new TagNotFoundException(id));
+        tag.setDeleted(true);
+        tagRepository.save(tag);
+        log.info("Tag soft deleted with id {}", id);
     }
 }

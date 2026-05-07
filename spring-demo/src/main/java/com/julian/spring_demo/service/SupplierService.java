@@ -9,6 +9,8 @@ import com.julian.spring_demo.exception.SupplierNotFoundException;
 import com.julian.spring_demo.model.Supplier;
 import com.julian.spring_demo.model.Tag;
 import com.julian.spring_demo.repository.SupplierRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -23,6 +25,7 @@ import java.util.stream.Collectors;
 public class SupplierService {
 
     private final SupplierRepository supplierRepository;
+    private static final Logger log = LoggerFactory.getLogger(SupplierService.class);
 
     public SupplierService (SupplierRepository supplierRepository) {
         this.supplierRepository = supplierRepository;
@@ -72,10 +75,11 @@ public class SupplierService {
 
     @Transactional
     public void delete (Long id) {
-        if (!supplierRepository.existsById(id)) {
-            throw new SupplierNotFoundException(id);
-        }
-        supplierRepository.deleteById(id);
+        Supplier supplier = supplierRepository.findById(id)
+                .orElseThrow(() -> new SupplierNotFoundException(id));
+        supplier.setDeleted(true);
+        supplierRepository.save(supplier);
+        log.info("Supplier soft deleted with id: {}", id);
     }
 
     @Transactional (readOnly = true)

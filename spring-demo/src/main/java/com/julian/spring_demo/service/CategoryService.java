@@ -5,6 +5,8 @@ import com.julian.spring_demo.model.Category;
 import com.julian.spring_demo.repository.CategoryRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -12,6 +14,7 @@ import java.util.List;
 public class CategoryService {
 
     private final CategoryRepository categoryRepository;
+    private static final Logger log = LoggerFactory.getLogger(CategoryService.class);
 
     public CategoryService (CategoryRepository categoryRepository) {
         this.categoryRepository = categoryRepository;
@@ -46,9 +49,10 @@ public class CategoryService {
 
     @Transactional
     public void delete (Long id) {
-        if (categoryRepository.existsById(id)) {
-            throw new CategoryNotFoundException(id);
-        }
-        categoryRepository.deleteById(id);
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new CategoryNotFoundException(id));
+        category.setDeleted(true);
+        categoryRepository.save(category);
+        log.info("Category soft deleted with id: {}", id);
     }
 }
