@@ -2,6 +2,7 @@ package com.julian.spring_demo.service;
 
 import com.julian.spring_demo.dto.ProductRequestDTO;
 import com.julian.spring_demo.dto.ProductResponseDTO;
+import com.julian.spring_demo.events.ProductCreatedEvent;
 import com.julian.spring_demo.exception.CategoryNotFoundException;
 import com.julian.spring_demo.exception.ProductNotFoundException;
 import com.julian.spring_demo.exception.TagNotFoundException;
@@ -11,6 +12,7 @@ import com.julian.spring_demo.model.Tag;
 import com.julian.spring_demo.repository.CategoryRepository;
 import com.julian.spring_demo.repository.ProductRepository;
 import com.julian.spring_demo.repository.TagRepository;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -31,11 +33,13 @@ public class ProductService {
     private final CategoryRepository categoryRepository;
     private final TagRepository tagRepository;
     private static final Logger log = LoggerFactory.getLogger(ProductService.class);
+    private final ApplicationEventPublisher eventPublisher;
 
-    public ProductService (ProductRepository repository, CategoryRepository categoryRepository, TagRepository tagRepository) {
+    public ProductService (ProductRepository repository, CategoryRepository categoryRepository, TagRepository tagRepository, ApplicationEventPublisher eventPublisher) {
         this.repository = repository;
         this.categoryRepository = categoryRepository;
         this.tagRepository = tagRepository;
+        this.eventPublisher = eventPublisher;
     }
 
     @Transactional (readOnly = true)
@@ -77,9 +81,11 @@ public class ProductService {
                     });
             product.setCategory(category);
         }
-        ProductResponseDTO result = toDTO(repository.save(product));
-        log.info("Product created successfully with id: {}", result.getId());
-        return result;
+        Product saved = repository.save(product);
+        eventPublisher.publishEvent(new ProductCreatedEvent(saved));
+
+        log.info("Product created successfully with id: {}", saved.getId());
+        return toDTO(saved);
     }
 
     @Transactional
