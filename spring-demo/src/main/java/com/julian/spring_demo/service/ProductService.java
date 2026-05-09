@@ -12,6 +12,8 @@ import com.julian.spring_demo.model.Tag;
 import com.julian.spring_demo.repository.CategoryRepository;
 import com.julian.spring_demo.repository.ProductRepository;
 import com.julian.spring_demo.repository.TagRepository;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -54,6 +56,7 @@ public class ProductService {
         return products.map(this::toDTO);
     }
 
+    @Cacheable (value = "products", key = "#id")
     @Transactional(readOnly = true)
     public ProductResponseDTO getById (Long id) {
         log.debug("Fetching product with id: {}", id);
@@ -88,6 +91,7 @@ public class ProductService {
         return toDTO(saved);
     }
 
+    @CacheEvict (value = "products", key = "#id")
     @Transactional
     public ProductResponseDTO update (Long id, ProductRequestDTO dto) {
         Product product = repository.findById(id)
@@ -105,6 +109,7 @@ public class ProductService {
         return toDTO(repository.save(product));
     }
 
+    @CacheEvict (value = "products", key = "#id")
     @Transactional
     public void delete (Long id) {
        Product product = repository.findById(id)

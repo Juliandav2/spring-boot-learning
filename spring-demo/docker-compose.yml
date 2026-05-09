@@ -8,3 +8,9 @@ services:
       POSTGRES_PASSWORD: admin123
     ports:
       - "5432:5432"
+
+  redis:
+    image: redis:7
+    container_name: spring_demo_redis
+    ports:
+      - "6379:6379"

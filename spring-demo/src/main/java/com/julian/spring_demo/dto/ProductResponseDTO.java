@@ -1,9 +1,10 @@
 package com.julian.spring_demo.dto;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Set;
 
-public class ProductResponseDTO {
+public class ProductResponseDTO implements Serializable {
 
     private Long id;
     private String name;
