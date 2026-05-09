@@ -12,18 +12,25 @@ import java.util.Date;
 public class JwtService {
 
     private static final String SECRET_KEY = "mi-clave-secreta-muy-larga-para-jwt-debe-tener-256-bits";
-    private static final long EXPIRATION = 1000 * 60 * 60 * 24;
+    private static final long ACCESS_TOKEN_EXPIRATION = 100 * 60 * 15;
+    private static final long REFRESH_TOKEN_EXPIRATION = 1000 * 60 * 60 * 24 * 7;
 
     private SecretKey getKey () {
         return Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
     }
 
-    public String generateToken (String email) {
+    public String generateAccessToken (String email) {
         return Jwts.builder()
                 .subject(email)
-                .issuedAt(new Date()).expiration(new Date(System.currentTimeMillis() + EXPIRATION))
+                .claim("type", "access")
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_EXPIRATION))
                 .signWith(getKey())
                 .compact();
+    }
+
+    public String generateRefreshTokenValue () {
+        return java.util.UUID.randomUUID().toString();
     }
 
     public String extractEmail (String token) {
@@ -31,7 +38,11 @@ public class JwtService {
     }
 
     public boolean isTokenValid (String token, String email) {
-        return extractEmail(token).equals(email) && !isTokenExpired(token);
+        try {
+            return extractEmail(token).equals(email) && !isTokenExpired(token);
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     public boolean isTokenExpired (String token) {

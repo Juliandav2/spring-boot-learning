@@ -2,18 +2,24 @@ package com.julian.spring_demo.dto;
 
 public class AuthResponseDTO {
 
-    private String token;
+    private String accessToken;
+    private String refreshToken;
     private String email;
     private String role;
 
-    public AuthResponseDTO (String token, String email, String role) {
-        this.token = token;
+    public AuthResponseDTO (String accessToken, String refreshToken, String email, String role) {
+        this.accessToken = accessToken;
+        this.refreshToken = refreshToken;
         this.email = email;
         this.role = role;
     }
 
-    public String getToken() {
-        return token;
+    public String getAccessToken() {
+        return accessToken;
+    }
+
+    public String getRefreshToken() {
+        return refreshToken;
     }
 
     public String getEmail() {

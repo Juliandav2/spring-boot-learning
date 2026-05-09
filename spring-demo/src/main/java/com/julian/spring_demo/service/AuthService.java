@@ -2,7 +2,9 @@ package com.julian.spring_demo.service;
 
 import com.julian.spring_demo.dto.AuthResponseDTO;
 import com.julian.spring_demo.dto.LoginRequestDTO;
+import com.julian.spring_demo.dto.RefreshRequestDTO;
 import com.julian.spring_demo.dto.RegisterRequestDTO;
+import com.julian.spring_demo.model.RefreshToken;
 import com.julian.spring_demo.model.Role;
 import com.julian.spring_demo.model.User;
 import com.julian.spring_demo.repository.UserRepository;
@@ -24,15 +26,18 @@ public class AuthService {
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
+    private final RefreshTokenService refreshTokenService;
 
     public AuthService (UserRepository userRepository,
                         JwtService jwtService,
                         PasswordEncoder passwordEncoder,
-                        AuthenticationManager authenticationManager) {
+                        AuthenticationManager authenticationManager,
+                        RefreshTokenService refreshTokenService) {
         this.userRepository = userRepository;
         this.jwtService = jwtService;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
+        this.refreshTokenService = refreshTokenService;
     }
 
     @Transactional
@@ -51,13 +56,14 @@ public class AuthService {
         );
 
         userRepository.save(user);
-        String token = jwtService.generateToken(user.getEmail());
-        log.info("User registered successfully: {}", user.getEmail());
+        String accessToken = jwtService.generateAccessToken(user.getEmail());
+        RefreshToken refreshToken = refreshTokenService.createRefreshToken(user);
 
-        return new AuthResponseDTO(token, user.getEmail(), user.getRole().name());
+        log.info("User registered successfully: {}", user.getEmail());
+        return new AuthResponseDTO(accessToken, refreshToken.getToken(), user.getEmail(), user.getRole().name());
     }
 
-    @Transactional (readOnly = true)
+    @Transactional
     public AuthResponseDTO login (LoginRequestDTO dto) {
         log.info("Login attempt for email: {}", dto.getEmail());
 
@@ -67,9 +73,26 @@ public class AuthService {
         User user = userRepository.findByEmail(dto.getEmail())
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        String token = jwtService.generateToken(user.getEmail());
-        log.info("Login successful for email: {}", dto.getEmail());
+        String accessToken = jwtService.generateAccessToken(user.getEmail());
+        RefreshToken refreshToken = refreshTokenService.createRefreshToken(user);
 
-        return new AuthResponseDTO(token, user.getEmail(), user.getRole().name());
+        log.info("Login successful for email: {}", dto.getEmail());
+        return new AuthResponseDTO(accessToken, refreshToken.getToken(), user.getEmail(), user.getRole().name());
+    }
+
+    @Transactional
+    public AuthResponseDTO refresh (RefreshRequestDTO dto) {
+        RefreshToken refreshToken = refreshTokenService.validateRefreshToken(dto.getRefreshToken());
+        User user = refreshToken.getUser();
+        String newAccessToken = jwtService.generateAccessToken(user.getEmail());
+
+        log.info("Access token refreshed for email: {}", user.getEmail());
+        return new AuthResponseDTO(newAccessToken, refreshToken.getToken(), user.getEmail(), user.getRole().name());
+    }
+
+    @Transactional
+    public void logout (RefreshRequestDTO dto) {
+        refreshTokenService.revokeRefreshToken(dto.getRefreshToken());
+        log.info("User logged out successfully");
     }
 }
