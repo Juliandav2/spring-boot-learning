@@ -11,6 +11,6 @@ services:
 
   redis:
     image: redis:7
-    container_name: spring_demo_redis
+    container_name: spring-demo-redis
     ports:
       - "6379:6379"
