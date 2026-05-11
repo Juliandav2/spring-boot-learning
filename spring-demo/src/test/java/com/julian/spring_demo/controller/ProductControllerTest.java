@@ -15,6 +15,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.HashSet;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.*;
@@ -37,7 +38,7 @@ public class ProductControllerTest {
 
     @Test
     void getAll_shouldReturn200() throws Exception {
-        ProductResponseDTO dto = new ProductResponseDTO(1L, "Laptop", 2500000, 10, "Electronics");
+        ProductResponseDTO dto = new ProductResponseDTO(1L, "Laptop", 2500000, 10, "Electronics", new HashSet<>(), null,null);
         when(productService.getAll(any(), any(), anyInt(), anyInt(), anyString()))
                 .thenReturn(new PageImpl<>(List.of(dto)));
 
@@ -48,7 +49,7 @@ public class ProductControllerTest {
 
     @Test
     void getById_shouldReturn200() throws Exception {
-        ProductResponseDTO dto = new ProductResponseDTO(1L, "Laptop", 2500000, 10, "Electronics");
+        ProductResponseDTO dto = new ProductResponseDTO(1L, "Laptop", 2500000, 10, "Electronics", new HashSet<>(), null, null);
         when(productService.getById(1L)).thenReturn(dto);
 
         mockMvc.perform(get("/api/products/1"))
@@ -63,7 +64,7 @@ public class ProductControllerTest {
         request.setPrice(2500000);
         request.setStock(10);
 
-        ProductResponseDTO response = new ProductResponseDTO(1L, "Laptop", 2500000, 10, null);
+        ProductResponseDTO response = new ProductResponseDTO(1L, "Laptop", 2500000, 10, null, new HashSet<>(), null, null);
         when(productService.create(any())).thenReturn(response);
 
         mockMvc.perform(post("/api/products")
